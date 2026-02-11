@@ -1,5 +1,5 @@
-import { Player, stringToPlayer } from './types/player';
-import { Advantage,advantage, Point, PointsData, Score } from './types/score';
+import { isSamePlayer, Player, stringToPlayer } from './types/player';
+import { Advantage,advantage, deuce, game, Point, PointsData, Score } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -52,12 +52,15 @@ export const scoreToString = (score: Score): string => {
 };
 
 export const scoreWhenDeuce = (winner: Player): Score => advantage(winner);
+
 export const scoreWhenAdvantage = (
   advantagedPlayed: Player,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(advantagedPlayed, winner)) return game(winner);
+  return deuce();
 };
+
 
 export const scoreWhenForty = (
   currentForty: unknown, // TO UPDATE WHEN WE KNOW HOW TO REPRESENT FORTY
