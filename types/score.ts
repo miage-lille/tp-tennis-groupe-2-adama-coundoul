@@ -1,7 +1,24 @@
 import { Player } from './player';
 
 // Surely not the best choice
-export type Point = number;
+export type Point =
+  | Love
+  | Fifteen
+  | Thirty
+
+export type Love = {
+  kind: 'LOVE';
+};
+
+export const love = (): Love => ({ kind: 'LOVE' });
+
+
+export type Fifteen = {
+  kind: 'FIFTEEN';  
+};
+
+export const fifteen = (): Fifteen => ({ kind: 'FIFTEEN' });
+
 
 export type PointsData = {
   PLAYER_ONE: Point;
@@ -67,6 +84,14 @@ export type Advantage = {
 export const advantage = (player: Player): Advantage => ({
   kind: 'ADVANTAGE',
   player
+});
+
+export type Thirty = {
+  kind: 'THIRTY';
+};
+
+export const thirty = (): Thirty => ({
+  kind: 'THIRTY',
 });
 
 export type Score = Points | Forty | Deuce | Advantage | Game;

@@ -1,5 +1,5 @@
 import { isSamePlayer, Player, stringToPlayer } from './types/player';
-import { Advantage,advantage, deuce, game, Point, PointsData, Score } from './types/score';
+import { Advantage,advantage, deuce, fifteen, forty, FortyData, game, love, Point, PointsData, Score, thirty } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -22,14 +22,26 @@ export const otherPlayer = (player: Player) => {
 };
 // Exercice 1 :
 export const pointToString = (point: Point): string => {
-  switch (point) {
-    case 0: return 'Love';
-    case 15: return '15';
-    case 30: return '30';
-    case 40: return '40';
-    default: return `${point}`;
+  switch (point.kind) {
+    case 'LOVE': return 'Love';
+    case 'FIFTEEN': return '15';
+    case 'THIRTY': return '30';
   }
 };
+
+export const stringToPoint = (str: string): Point => {
+  switch (str) {
+    case 'Love':
+    case 'LOVE': return love();
+    case '15':
+    case 'FIFTEEN': return fifteen();
+    case '30':
+    case 'THIRTY': return thirty();
+    default: throw new Error(`Unknown point: ${str}`);
+  }
+};
+
+
 
 export const scoreToString = (score: Score): string => {
   switch (score.kind) {
@@ -61,12 +73,29 @@ export const scoreWhenAdvantage = (
   return deuce();
 };
 
+export const incrementPoint = (point: Point) : Option.Option<Point> => {
+  switch (point.kind) {
+    case 'LOVE':
+      return Option.some(fifteen());
+    case 'FIFTEEN':
+      return Option.some(thirty());
+    case 'THIRTY':
+      return Option.none();
+  }
+};
 
 export const scoreWhenForty = (
-  currentForty: unknown, // TO UPDATE WHEN WE KNOW HOW TO REPRESENT FORTY
+  currentForty: FortyData,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(currentForty.player, winner)) return game(winner);
+  return pipe(
+    incrementPoint(currentForty.otherPoint),
+    Option.match({
+      onNone: () => deuce(),
+      onSome: p => forty(currentForty.player, p) as Score
+    })
+  );
 };
 
 
