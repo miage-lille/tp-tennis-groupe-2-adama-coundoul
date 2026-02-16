@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, scoreWhenPoint, stringToPoint } from '..';
-import { Deuce,PointsData,advantage, deuce, fifteen, forty, game, love, thirty } from '../types/score';
+import { otherPlayer, playerToString, score, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, scoreWhenPoint, stringToPoint } from '..';
+import { Deuce,PointsData,Score,advantage, deuce, fifteen, forty, game, love, points, thirty } from '../types/score';
 import { stringToPlayer } from '../types/player';
 
 describe('Tests for tooling functions', () => {
@@ -110,4 +110,18 @@ describe('Tests for transition functions', () => {
     expect(score).toStrictEqual(forty(winner, thirtyData[loser]));
   });
 });
+
+test('Full game simulation from 0-0', () => {
+  let currentScore: Score = points(love(), love()); 
+  
+  currentScore = score(currentScore, stringToPlayer('PLAYER_ONE')); 
+  expect(currentScore.kind).toBe('POINTS');
+  
+  currentScore = score(currentScore, stringToPlayer('PLAYER_ONE'));  
+  expect(currentScore.kind).toBe('POINTS');
+  
+  currentScore = score(currentScore, stringToPlayer('PLAYER_ONE')); 
+  expect(currentScore.kind).toBe('FORTY');
+});
+
 });
