@@ -1,6 +1,6 @@
 import { describe, expect, test } from '@jest/globals';
-import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, stringToPoint } from '..';
-import { Deuce,advantage, deuce, forty, game, thirty } from '../types/score';
+import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, scoreWhenPoint, stringToPoint } from '..';
+import { Deuce,PointsData,advantage, deuce, fifteen, forty, game, love, thirty } from '../types/score';
 import { stringToPlayer } from '../types/player';
 
 describe('Tests for tooling functions', () => {
@@ -79,15 +79,35 @@ describe('Tests for transition functions', () => {
 });
 
   // -------------------------TESTS POINTS-------------------------- //
-  // test('Given players at 0 or 15 points score kind is still POINTS', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+   test('Given players at 0 or 15 points score kind is still POINTS', () => {
+ // 0-0 → 15-0
+  const score1 = scoreWhenPoint(
+    { PLAYER_ONE: love(), PLAYER_TWO: love() }, 
+    stringToPlayer('PLAYER_ONE')
+  );
+  expect(score1.kind).toBe('POINTS');
+  
+  // 15-0 → 15-15
+  const score2 = scoreWhenPoint(
+    { PLAYER_ONE: fifteen(), PLAYER_TWO: love() }, 
+    stringToPlayer('PLAYER_TWO')
+  );
+  expect(score2.kind).toBe('POINTS');
+});
 
-  // test('Given one player at 30 and win, score kind is forty', () => {
-  //   throw new Error(
-  //     'Your turn to code the preconditions, expected result and test.'
-  //   );
-  // });
+  test('Given one player at 30 and win, score kind is forty', () => {
+  ['PLAYER_ONE', 'PLAYER_TWO'].forEach((winnerStr) => {
+    const winner = stringToPlayer(winnerStr);
+    const loser = otherPlayer(winner);
+    
+    // Le gagnant a 30, le perdant a 0
+    const thirtyData: PointsData = {
+      PLAYER_ONE: winner === stringToPlayer('PLAYER_ONE') ? thirty() : love(),
+      PLAYER_TWO: winner === stringToPlayer('PLAYER_TWO') ? thirty() : love()
+    };
+    
+    const score = scoreWhenPoint(thirtyData, winner);
+    expect(score).toStrictEqual(forty(winner, thirtyData[loser]));
+  });
+});
 });
